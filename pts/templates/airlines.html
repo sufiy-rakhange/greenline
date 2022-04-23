@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+<!-- Title -->
+{% block title %}Airlines{% endblock %}
+<!-- Body -->
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col">
+        <table class="table table-bordered">
+            <thead class="bg-success">
+                <tr class="text-white">
+                    <th>Company Name</th>
+                    <th>IATA Code</th>
+                    <th>Country</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for airline in airlines %}
+                <tr>
+                    <td>{{ airline.company_name }}</td>
+                    <td class="text-center">{{ airline.two_letter_code }}</td>
+                    <td class="text-center">{{ airline.country }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

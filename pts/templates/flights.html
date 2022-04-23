@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+<!-- Title -->
+{% block title %}flights{% endblock %}
+<!-- Body -->
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col">
+        <table class="table table-bordered">
+            <thead class="bg-success">
+                <tr class="text-white">
+                    <th>Flight</th>
+                    <th>Departure</th>
+                    <th>Arrival</th>
+                    <th>Terminal</th>
+                    <th>Aircraft</th>
+                    <th>Capacity</th>
+                    <th>Crew</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for flight in flights %}
+                <tr>
+                    <td>{{ flight.flight }}</td>
+                    <td>{{ flight.departure }}</td>
+                    <td>{{ flight.arrival }}</td>
+                    <td>{{ flight.terminal }}</td>
+                    <td>{{ flight.aircraft }}</td>
+                    <td>{{ flight.capacity }}</td>
+                    <td>{{ flight.crew }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

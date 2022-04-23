@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+<!-- Title -->
+{% block title %}Document{% endblock %}
+<!-- Body -->
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-6">
+        <div class="card dashboard-card m-5 p-5">
+            <div class="card-header">
+                <h3>Hello User</h3>
+            </div>
+            <div class="card-body">
+                <h5>Welcome to the Greenline Passenger Targeting System</h5>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row justify-content-center">
+    <div class="col-6">
+        <div class="card m-5 p-5">
+            <div class="card-body">
+                <form action="{% url 'upload' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-12">
+                            <select name="category" class="form-select">
+                                <option value="" selected disabled>-- Select Category --</option>
+                                <option value="airlines">Airlines Data</option>
+                                <option value="airport">Airport Data</option>
+                                <option value="flight">Flight Data</option>
+                                <option value="passenger">Passenger Data</option>
+                                <option value="risk">Risk Profile</option>
+                            </select>
+                        </div>
+                        <div class="col-12 p-2">
+                            <input type="file" name="file" class="form-control">
+                        </div>
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-success">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+<!-- Title -->
+{% block title %}Airports{% endblock %}
+<!-- Body -->
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col">
+        <table class="table table-bordered">
+            <thead class="bg-success">
+                <tr class="text-white">
+                    <th>IATA Code</th>
+                    <th>ISO Alpha 3</th>
+                    <th>Long Name</th>
+                    <th>Long Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for airport in airports %}
+                <tr>
+                    <td>{{ airport.iata_code }}</td>
+                    <td>{{ airport.iso_alpha_3_code }}</td>
+                    <td>{{ airport.long_name }}</td>
+                    <td>{{ airport.long_location }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}
