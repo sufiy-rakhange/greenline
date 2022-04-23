@@ -4,21 +4,16 @@
 <!-- Body -->
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-6">
+    <div class="col-8">
         <div class="card dashboard-card m-5 p-5">
             <div class="card-header">
-                <h3>Hello User</h3>
+                <h3>Hello Admin</h3>
             </div>
             <div class="card-body">
                 <h5>Welcome to the Greenline Passenger Targeting System</h5>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row justify-content-center">
-    <div class="col-6">
-        <div class="card m-5 p-5">
-            <div class="card-body">
+
+                <hr class="my-4">
+                <label>You can upload a file from below for selected category</label>
                 <form action="{% url 'upload' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="row">
@@ -43,4 +38,5 @@
             </div>
         </div>
     </div>
-    {% endblock %}
+</div>
+{% endblock %}

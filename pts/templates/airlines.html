@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col">
-        <table class="table table-bordered">
+        <table class="table table-bordered table-hover">
             <thead class="bg-success">
                 <tr class="text-white">
                     <th>Company Name</th>
@@ -15,7 +15,7 @@
             </thead>
             <tbody>
                 {% for airline in airlines %}
-                <tr>
+                <tr onclick="window.location.href = 'airline/{{ airline.id }}'">
                     <td>{{ airline.company_name }}</td>
                     <td class="text-center">{{ airline.two_letter_code }}</td>
                     <td class="text-center">{{ airline.country }}</td>

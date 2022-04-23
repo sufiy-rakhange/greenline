@@ -1,0 +1,28 @@
+{% extends 'risks/base.html' %}
+<!-- Title -->
+{% block title %}Airport Risk{% endblock %}
+
+<!-- Heading -->
+{% block heading %}
+<h3>Airport Risk: {{ airport.long_name }} ({{ airport.iata_code }})</h3>
+{% endblock %}
+
+<!-- Body -->
+{% block body %}
+<div class="tab-pane fade show active" id="terrorism" role="tabpanel" aria-labelledby="terrorism-tab">
+    Terrorism {{ airline.name }}
+</div>
+<div class="tab-pane fade" id="narcotics" role="tabpanel" aria-labelledby="narcotics-tab">
+    Narcotics
+</div>
+<div class="tab-pane fade" id="smuggling" role="tabpanel" aria-labelledby="smuggling-tab">
+    Smuggling
+</div>
+<div class="tab-pane fade" id="immigration" role="tabpanel" aria-labelledby="immigration-tab">
+    Illegal Immigration
+</div>
+<div class="tab-pane fade" id="revenue" role="tabpanel" aria-labelledby="revenue-tab">
+    Revenue
+</div>
+
+{% endblock %}

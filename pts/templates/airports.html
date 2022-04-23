@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col">
-        <table class="table table-bordered">
+        <table class="table table-bordered table-hover">
             <thead class="bg-success">
                 <tr class="text-white">
                     <th>IATA Code</th>
@@ -16,7 +16,7 @@
             </thead>
             <tbody>
                 {% for airport in airports %}
-                <tr>
+                <tr onclick="window.location.href = 'airport/{{ airport.id }}'">
                     <td>{{ airport.iata_code }}</td>
                     <td>{{ airport.iso_alpha_3_code }}</td>
                     <td>{{ airport.long_name }}</td>

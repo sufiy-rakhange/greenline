@@ -1,7 +1,7 @@
 import imp
 import re
 from unicodedata import category
-from django.http import HttpResponse, request, response
+from django.http import Http404, HttpResponse, request, response
 from django.core import paginator
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
@@ -96,19 +96,50 @@ def upload(request):
         return HttpResponseRedirect(reverse("index"))
 
 
-
+# Airlines
 def airlines(request):
     airlines = Airlines.objects.all()
     return render(request, 'airlines.html', {'airlines': airlines})
 
+def airlineRisk(request, id):
+    try:
+        airline = Airlines.objects.get(id=id)
+    except:
+        raise Http404("No Such Student Found")
+    return render(request, "risks/airline.html", {'airline' :airline})
+
+# Airports
 def airports(request):
     airports = Airports.objects.all()
     return render(request, 'airports.html', {'airports': airports})
 
+def airportRisk(request, id):
+    try:
+        airport = Airports.objects.get(id=id)
+    except:
+        raise Http404("No Such Student Found")
+    return render(request, "risks/airport.html", {'airport' :airport})
+
+# Flights
 def flights(request):
     flights = Flights.objects.all()
     return render(request, 'flights.html', {'flights': flights})
 
+def flightRisk(request, id):
+    try:
+        flight = Flights.objects.get(id=id)
+    except:
+        raise Http404("No Such Student Found")
+    return render(request, "risks/airport.html", {'flight' :flight})
+
+# Passengers
 def passengers(request):
     passenger_flight = PassengerFlight.objects.all()
     return render(request, 'passengers.html', {'passengers': passenger_flight})
+
+def passengerRisk(request, id):
+    try:
+        passenger = Passengers.objects.get(id=id)
+    except:
+        raise Http404("No Such Student Found")
+    return render(request, "risks/airport.html", {'passenger' :passenger})

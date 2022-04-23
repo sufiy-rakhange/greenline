@@ -79,10 +79,7 @@ li .active {
 /* Cards */
 
 .dashboard-card {
-    /* background-image: url('/static/img/design.png'); */
-    /* background-repeat: no-repeat;
-    background-size: contain; */
-    background: -webkit-linear-gradient(bottom, #4fe588, #62c989, black);
+    background: -webkit-linear-gradient(137deg, #4fe588, #62c989, black);
     background-repeat: no-repeat;
     box-shadow: 1px -1px 10px 0px #000000;
     border-radius: 10px !important;
@@ -91,12 +88,13 @@ li .active {
     color: white !important;
 }
 
-
-/* .dashboard-card:hover {
-    box-shadow: 1px -1px 10px 0px #000000;
-    cursor: pointer;
-} */
-
 .br-green {
     border-right: 1px solid #4fe588;
+}
+
+
+/* Table styling */
+
+tr:hover {
+    cursor: pointer;
 }

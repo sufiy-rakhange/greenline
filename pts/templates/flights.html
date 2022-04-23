@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col">
-        <table class="table table-bordered">
+        <table class="table table-bordered table-hover">
             <thead class="bg-success">
                 <tr class="text-white">
                     <th>Flight</th>
@@ -19,7 +19,7 @@
             </thead>
             <tbody>
                 {% for flight in flights %}
-                <tr>
+                <tr onclick="window.location.href = 'flight/{{ flight.id }}'">
                     <td>{{ flight.flight }}</td>
                     <td>{{ flight.departure }}</td>
                     <td>{{ flight.arrival }}</td>
