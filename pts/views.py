@@ -1,4 +1,5 @@
 import email
+import enum
 import imp
 from math import floor
 import re
@@ -19,6 +20,7 @@ from .models import *
 import io, json
 import pandas
 import numpy
+from collections import defaultdict
 
 # Create your views here.
 @require_http_methods(["GET", "POST"])
@@ -286,9 +288,40 @@ def airlineRisk(request, id):
         risks = Risks.objects.all()
     except:
         raise Http404("No Such Airline Found")
+    passenger_risk = PassengerRisk.objects.all()
+    passenger_flight = PassengerFlight.objects.filter(
+        f_id__flight__contains=airline.two_letter_code
+    )
+    risks = Risks.objects.all()
+    risk_list = defaultdict(dict)
+    risk_list_overall = defaultdict(dict)
+    for i in passenger_flight:
+        passengers = PassengerRisk.objects.filter(p_id=i.p_id)
+        for p in passengers.values():
+            risk = Risks.objects.get(id=p['r_id_id'])
+            flight = Flights.objects.get(id=i.f_id_id)
+            try:
+                risk_list[flight.flight][risk.name] += p["value"]
+            except:
+                risk_list[flight.flight][risk.name] = p["value"]
+
+            try:
+                risk_list_overall['Overall'][risk.name] += p["value"]
+            except:
+                risk_list_overall['Overall'][risk.name] = p["value"]
+    arr = {
+        'r': []
+    }
+    for risk in risks.values():
+        arr['r'].append(risk)
+    print(risk_list)
     context = {
+        'airline': airline,
+        'passenger_risk': passenger_risk,
         'risks': risks,
-        'airline': airline
+        'js_risk': json.dumps(arr['r']),
+        'js_passenger': json.dumps(risk_list),
+        'js_passenger_overall': json.dumps(risk_list_overall)
     }
     return render(request, "risks/airline.html", context)
 
@@ -310,16 +343,40 @@ def airports(request):
 @require_http_methods(["GET"])
 @login_required(login_url="login")
 def airportRisk(request, id):
-    try:
-        airport = Airports.objects.get(id=id)
-        passenger_risk = PassengerRisk.objects.all()
-        risks = Risks.objects.all()
-    except:
-        raise Http404("No Such Airport Found")
+    airport = Airports.objects.get(id=id)
+    passenger_risk = PassengerRisk.objects.all()
+    passenger_flight = PassengerFlight.objects.filter(
+        f_id__arrival=airport.iata_code
+    )
+    risks = Risks.objects.all()
+    risk_list = defaultdict(dict)
+    risk_list_overall = defaultdict(dict)
+    for i in passenger_flight:
+        passengers = PassengerRisk.objects.filter(p_id=i.p_id)
+        for p in passengers.values():
+            risk = Risks.objects.get(id=p['r_id_id'])
+            flight = Flights.objects.get(id=i.f_id_id)
+            try:
+                risk_list[flight.flight][risk.name] += p["value"]
+            except:
+                risk_list[flight.flight][risk.name] = p["value"]
+
+            try:
+                risk_list_overall['Overall'][risk.name] += p["value"]
+            except:
+                risk_list_overall['Overall'][risk.name] = p["value"]
+    arr = {
+        'r': []
+    }
+    for risk in risks.values():
+        arr['r'].append(risk)
     context = {
         'airport': airport,
         'passenger_risk': passenger_risk,
-        'risks': risks
+        'risks': risks,
+        'js_risk': json.dumps(arr['r']),
+        'js_passenger': json.dumps(risk_list),
+        'js_passenger_overall': json.dumps(risk_list_overall)
     }
     return render(request, "risks/airport.html", context)
 
@@ -346,18 +403,39 @@ def flightRisk(request, id):
         risks = Risks.objects.all()
     except:
         raise Http404("No Such Flight Found")
-    p_id = PassengerFlight.objects.filter(f_id=id).values('p_id', 'p_id_id')
-    print(p_id[1]['p_id'], p_id[1]['p_id_id'])
-    risk = PassengerRisk.objects.filter(p_id_id=p_id[0]['p_id_id']).values()
-    for r in p_id:
-        print(json.dumps(r))
-    risks = PassengerRisk.objects.all().values('p_id_id')
-    # print(risk, risks)
+    arr = {
+        'r': []
+    }
+
+    risk_list = defaultdict(dict)
+    risk_list_overall = defaultdict(dict)
+    passenger_flight = PassengerFlight.objects.filter(f_id=flight.id).values()
+
+    for i in passenger_flight:
+        passengers = PassengerRisk.objects.filter(p_id=i['p_id_id'])
+        for p in passengers.values():
+            passenger = Passengers.objects.get(id=p['p_id_id'])
+            risk = Risks.objects.get(id=p['r_id_id'])
+            risk_list[passenger.forename][risk.name] = p["value"]
+            try:
+                risk_list_overall['Overall'][risk.name] += p["value"]
+            except:
+                risk_list_overall['Overall'][risk.name] = p["value"]
+
+    # When there is no risk for flight
+    if len(passenger_flight) == 0 or len(passengers) == 0:
+        messages.success(request, "No risk found for this flight")
+        return HttpResponseRedirect(reverse("flights"))
+    for risk in risks.values():
+        arr['r'].append(risk)
     context = {
         'flight': flight,
-        'risks': risks
+        'risks': risks,
+        'js_risk': json.dumps(arr['r']),
+        'js_passenger': json.dumps(risk_list),
+        'js_passenger_overall': json.dumps(risk_list_overall)
     }
-    return render(request, "risks/flight.html", context=json.dumps(r))
+    return render(request, "risks/flight.html", context)
 
 
 # Passengers
@@ -378,13 +456,17 @@ def passengers(request):
 @login_required(login_url="login")
 def passengerRisk(request, id, p_id):
     try:
-        passenger = PassengerFlight.objects.filter(id=id).values()
+        passenger = PassengerFlight.objects.filter(id=id)
         p_risk = PassengerRisk.objects.filter(p_id=p_id)
-        print(p_risk)
         risks = Risks.objects.all()
     except:
-        raise Http404("No Such Passenger Found")
-    # risk_value = PassengerRisk.objects.filter()
+        raise Http404("No Such Flight Found")
+
+    # When there is no risk for the passenger
+    if len(p_risk) == 0:
+        messages.success(request, "No risk found for this passenger")
+        return HttpResponseRedirect(reverse("passengers"))
+
     arr = {
         'a' : [],
         'r': []
@@ -393,10 +475,11 @@ def passengerRisk(request, id, p_id):
         arr['a'].append(p)
     for risk in risks.values():
         arr['r'].append(risk)
-    # print(arr['r'])
+
     context = {
         'risks': risks,
-        'passenger': passenger,
+        'passenger': passenger.values(),
+        'p': passenger,
         'p_risk': p_risk,
         'js_passenger': json.dumps(arr['a']),
         'js_risk': json.dumps(arr['r']),

@@ -54,138 +54,21 @@
             series: [{
                 name: "Risk",
                 colorByPoint: true,
-                data: [{
-                    name: "Terrorism",
-                    y: 62.74,
-                    drilldown: "Terrorism"
-                }, {
-                    name: "Narcotics",
-                    y: 10.57,
-                    drilldown: "Narcotics"
-                }, {
-                    name: "Smuggling",
-                    y: 7.23,
-                    drilldown: "Smuggling"
-                }, {
-                    name: "Illegal Immigration",
-                    y: 5.58,
-                    drilldown: "Illegal Immigration"
-                }, {
-                    name: "Revenue",
-                    y: 4.02,
-                    drilldown: "Revenue"
-                }]
+                data: (function() {
+                    var data = [];
+                    const risks = JSON.parse('{{ js_risk | escapejs }}');
+                    const passengers = JSON.parse('{{ js_passenger_overall | escapejs }}');
+                    for (var i = 0; i < risks.length; i++) {
+                        data.push({
+                            name: risks[i]['name'],
+                            y: passengers['Overall'][risks[i]['name']],
+                            drilldown: risks[i]['name'],
+                        });
+                    }
+                    return data;
+                }())
             }],
         });
-
-        // Highcharts.chart('overview', {
-        //     chart: {
-        //         type: 'column'
-        //     },
-        //     title: {
-        //         text: 'Smartphone Brand Results'
-        //     },
-        //     // accessibility: {
-        //     //     announceNewData: {
-        //     //         enabled: true
-        //     //     }
-        //     // },
-        //     xAxis: {
-        //         categories: [
-        //             'Jan',
-        //             'Feb',
-        //             'Mar',
-        //             'Apr',
-        //             'May',
-        //             'Jun',
-        //             'Jul',
-        //             'Aug',
-        //             'Sep',
-        //             'Oct',
-        //             'Nov',
-        //             'Dec'
-        //         ],
-        //         crosshair: true
-        //     },
-        //     yAxis: {
-        //         min: 0,
-        //         title: {
-        //             text: 'Number of Participants'
-        //         }
-
-        //     },
-        //     // legend: {
-        //     //     enabled: false
-        //     // },
-
-
-        //     tooltip: {
-        //         headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-        //         pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-        //             '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-        //         footerFormat: '</table>',
-        //         shared: true,
-        //         useHTML: true
-        //     },
-        //     plotOptions: {
-        //         column: {
-        //             pointPadding: 0.2,
-        //             borderWidth: 0
-        //         }
-        //     },
-        //     series: [{
-        //         name: "Apple",
-        //         data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4],
-        //     }, {
-        //         name: 'New York',
-        //         data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
-
-        //         //     name: "Nokia",
-        //         //     y: 0,
-        //         // }, {
-        //         //     name: "Motorola",
-        //         //     y: 0,
-        //         // }, {
-        //         //     name: "Huawei",
-        //         //     y: 2.9,
-        //         // }, {
-        //         //     name: "Google",
-        //         //     y: 0,
-        //         // }, {
-        //         //     name: "OnePlus",
-        //         //     y: 5.9,
-        //         // }, {
-        //         //     name: "Oppo",
-        //         //     y: 5.9,
-        //         // }, {
-        //         //     name: "Vivo",
-        //         //     y: 2.9,
-        //         // }, {
-        //         //     name: "Sony",
-        //         //     y: 0,
-        //         // }, {
-        //         //     name: "Not Applicable",
-        //         //     y: 0,
-        //         // }, {
-        //         //     name: "Xiaomi",
-        //         //     y: 5.9,
-        //         // }, {
-        //         //     name: "Mi",
-        //         //     y: 2.9,
-        //         // }, {
-        //         //     name: "Poco by Xiaomi",
-        //         //     y: 2.9,
-        //         // }, {
-        //         //     name: "Tecno",
-        //         //     y: 2.9,
-        //         // }, {
-        //         //     name: "Redmi",
-        //         //     y: 2.9,
-        //         // }, {
-        //         //     name: "Realme",
-        //         //     y: 2.9,
-        //     }],
-        // });
     </script>
 </div>
 {% for risk in risks %}
@@ -222,15 +105,19 @@
             series: [{
                 name: 'Risk',
                 colorByPoint: true,
-                data: [{
-                    name: 'Chrome',
-                    y: 61.41,
-                    sliced: true,
-                    selected: true
-                }, {
-                    name: 'Internet Explorer',
-                    y: 11.84
-                }]
+                data: (function() {
+                    var data = [];
+                    const passengers = JSON.parse('{{ js_passenger | escapejs }}');
+                    for (var i = 0; i < Object.keys(passengers).length; i++) {
+                        data.push({
+                            name: Object.keys(passengers)[i],
+                            y: Object.values(passengers)[i]['{{ risk.name }}'],
+                            sliced: true,
+                            selected: true
+                        });
+                    }
+                    return data;
+                }())
             }]
         });
     </script>

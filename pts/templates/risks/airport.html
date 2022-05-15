@@ -54,27 +54,19 @@
             series: [{
                 name: "Risk",
                 colorByPoint: true,
-                data: [{
-                    name: "Terrorism",
-                    y: 62.74,
-                    drilldown: "Terrorism"
-                }, {
-                    name: "Narcotics",
-                    y: 10.57,
-                    drilldown: "Narcotics"
-                }, {
-                    name: "Smuggling",
-                    y: 7.23,
-                    drilldown: "Smuggling"
-                }, {
-                    name: "Illegal Immigration",
-                    y: 5.58,
-                    drilldown: "Illegal Immigration"
-                }, {
-                    name: "Revenue",
-                    y: 4.02,
-                    drilldown: "Revenue"
-                }]
+                data: (function() {
+                    var data = [];
+                    const risks = JSON.parse('{{ js_risk | escapejs }}');
+                    const passengers = JSON.parse('{{ js_passenger_overall | escapejs }}');
+                    for (var i = 0; i < risks.length; i++) {
+                        data.push({
+                            name: risks[i]['name'],
+                            y: passengers['Overall'][risks[i]['name']],
+                            drilldown: risks[i]['name'],
+                        });
+                    }
+                    return data;
+                }())
             }],
         });
     </script>
@@ -113,17 +105,22 @@
             series: [{
                 name: 'Risk',
                 colorByPoint: true,
-                data: [{
-                    name: 'Chrome',
-                    y: 61.41,
-                    sliced: true,
-                    selected: true
-                }, {
-                    name: 'Internet Explorer',
-                    y: 11.84
-                }]
+                data: (function() {
+                    var data = [];
+                    const passengers = JSON.parse('{{ js_passenger | escapejs }}');
+                    for (var i = 0; i < Object.keys(passengers).length; i++) {
+                        data.push({
+                            name: Object.keys(passengers)[i],
+                            y: Object.values(passengers)[i]['{{ risk.name }}'],
+                            sliced: true,
+                            selected: true
+                        });
+                    }
+                    return data;
+                }())
             }]
         });
     </script>
 </div>
-{% endfor %} {% endblock %}
+{% endfor %}
+<a href="/airports" class="btn btn-secondary my-4">Go Back</a> {% endblock %}

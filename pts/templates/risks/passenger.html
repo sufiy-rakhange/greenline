@@ -4,7 +4,7 @@
 
 <!-- Heading -->
 {% block heading %}
-<h3>Passenger Risk: {{ passenger.p_id.forename }} {{ passenger.p_id.family_name}}</h3>
+<h3>Passenger Risk: {{ p.0.p_id.forename }} {{ p.0.p_id.family_name}}</h3>
 {% endblock %}
 
 <!-- Passenger Body -->
@@ -108,20 +108,6 @@
             series: [{
                 name: 'Risk',
                 colorByPoint: true,
-                // data: (function() {
-                //         console.log(parseInt('{{ risk.value }}'))
-
-                //         var data = [];
-
-                //         data.push({
-                //             name: '{{ risk.r_id }}',
-                //             y: '{{ risk.value }}',
-                //             sliced: true,
-                //             selected: true
-                //         });
-                //         console.log(data);
-                //         return data;
-                //     }())
                 data: [{
                     name: '{{ risk.r_id.name }}',
                     y: parseInt('{{ risk.value }}'),
@@ -134,4 +120,4 @@
 
 </div>
 {% endfor %}
-<a href="/" class="btn btn-secondary my-4">Go back</a> {% endblock %}
+<a href="/passengers" class="btn btn-secondary my-4">Go back</a> {% endblock %}
