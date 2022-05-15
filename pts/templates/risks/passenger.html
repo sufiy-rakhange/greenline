@@ -1,15 +1,16 @@
 {% extends 'risks/base.html' %}
 <!-- Title -->
-{% block title %}Airport Risk{% endblock %}
+{% block title %}Passenger Risk{% endblock %}
 
 <!-- Heading -->
 {% block heading %}
-<h3>Airport Risk: {{ airport.long_name }} ({{ airport.iata_code }})</h3>
+<h3>Passenger Risk: {{ passenger.p_id.forename }} {{ passenger.p_id.family_name}}</h3>
 {% endblock %}
 
-<!-- Body -->
+<!-- Passenger Body -->
 {% block body %}
 <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+
     <script>
         // Create the chart
         Highcharts.chart('overview', {
@@ -52,37 +53,31 @@
             },
 
             series: [{
+
                 name: "Risk",
                 colorByPoint: true,
-                data: [{
-                    name: "Terrorism",
-                    y: 62.74,
-                    drilldown: "Terrorism"
-                }, {
-                    name: "Narcotics",
-                    y: 10.57,
-                    drilldown: "Narcotics"
-                }, {
-                    name: "Smuggling",
-                    y: 7.23,
-                    drilldown: "Smuggling"
-                }, {
-                    name: "Illegal Immigration",
-                    y: 5.58,
-                    drilldown: "Illegal Immigration"
-                }, {
-                    name: "Revenue",
-                    y: 4.02,
-                    drilldown: "Revenue"
-                }]
+                data: (function() {
+                    var data = [];
+                    const risks = JSON.parse('{{ js_risk | escapejs }}');
+                    const passengers = JSON.parse('{{ js_passenger | escapejs }}');
+
+                    for (var i = 0; i < risks.length; i++) {
+                        data.push({
+                            name: risks[i]['name'],
+                            y: passengers[i]['value'],
+                            drilldown: risks[i]['name'],
+                        });
+                    }
+                    return data;
+                }())
             }],
         });
     </script>
 </div>
-{% for risk in risks %}
-<div class="tab-pane fade" id="{{ risk.name|cut:' ' }}" role="tabpanel" aria-labelledby="{{ risk.name }}-tab">
+{% for risk in p_risk %}
+<div class="tab-pane fade" id="{{ risk.r_id.name|cut:' ' }}" role="tabpanel" aria-labelledby="{{ risk.name }}-tab">
     <script>
-        Highcharts.chart('{{ risk.name|cut:" " }}', {
+        Highcharts.chart('{{ risk.r_id.name|cut:" " }}', {
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
@@ -113,17 +108,30 @@
             series: [{
                 name: 'Risk',
                 colorByPoint: true,
+                // data: (function() {
+                //         console.log(parseInt('{{ risk.value }}'))
+
+                //         var data = [];
+
+                //         data.push({
+                //             name: '{{ risk.r_id }}',
+                //             y: '{{ risk.value }}',
+                //             sliced: true,
+                //             selected: true
+                //         });
+                //         console.log(data);
+                //         return data;
+                //     }())
                 data: [{
-                    name: 'Chrome',
-                    y: 61.41,
+                    name: '{{ risk.r_id.name }}',
+                    y: parseInt('{{ risk.value }}'),
                     sliced: true,
                     selected: true
-                }, {
-                    name: 'Internet Explorer',
-                    y: 11.84
                 }]
             }]
         });
     </script>
+
 </div>
-{% endfor %} {% endblock %}
+{% endfor %}
+<a href="/" class="btn btn-secondary my-4">Go back</a> {% endblock %}

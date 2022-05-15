@@ -1,10 +1,10 @@
 {% extends 'risks/base.html' %}
 <!-- Title -->
-{% block title %}Airport Risk{% endblock %}
+{% block title %}Flight Risk{% endblock %}
 
 <!-- Heading -->
 {% block heading %}
-<h3>Airport Risk: {{ airport.long_name }} ({{ airport.iata_code }})</h3>
+<h3>Flight Risk: {{ flight.flight }} ({{flight.aircraft}})</h3>
 {% endblock %}
 
 <!-- Body -->
@@ -80,7 +80,7 @@
     </script>
 </div>
 {% for risk in risks %}
-<div class="tab-pane fade" id="{{ risk.name|cut:' ' }}" role="tabpanel" aria-labelledby="{{ risk.name }}-tab">
+<div class="tab-pane fade" id="{{ risk.name|cut:' ' }}" role="tabpanel" aria-labelledby="{{ risk.name|cut:' ' }}-tab">
     <script>
         Highcharts.chart('{{ risk.name|cut:" " }}', {
             chart: {

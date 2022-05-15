@@ -2,18 +2,28 @@
 <!-- Title -->
 {% block title %}Document{% endblock %}
 <!-- Body -->
-{% block content %}
+{% block content %} {% if messages %} {% for message in messages %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4 col-8">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+{% endfor %} {% endif %}
 <div class="row justify-content-center">
     <div class="col-8">
         <div class="card dashboard-card m-5 p-5">
             <div class="card-header">
-                <h3>Hello Admin</h3>
+                <h3 class="text-capitalize">hello {{ request.user.username }}</h3>
             </div>
             <div class="card-body">
                 <h5>Welcome to the Greenline Passenger Targeting System</h5>
 
                 <hr class="my-4">
                 <label>You can upload a file from below for selected category</label>
+                <!-- <input type="text" name="" id="" class="form-control"> -->
                 <form action="{% url 'upload' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="row">

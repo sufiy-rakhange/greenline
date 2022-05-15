@@ -1,0 +1,100 @@
+{% extends 'basic_base.html' %}
+<!-- Title -->
+{% block title %}Add Risk{% endblock %}
+<!-- Body -->
+{% block content %}
+<div class="row align-items-center justify-content-center">
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                Add a Risk
+            </div>
+            <div class="card-body">
+                <form action="{% url 'add_risk' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="row my-4">
+                        <div class="col">
+                            <input type="text" name="name" class="form-control" placeholder="Risk Name">
+                        </div>
+                    </div>
+                    <div class="row my-4">
+                        <div class="col text-end">
+                            <button type="submit" class="btn btn-success">
+                                Add Risk
+                            </button>
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-secondary" onclick="window.location.href = '/'">
+                                Go back
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Error or Success messages -->
+{% if messages %} {% for message in messages %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-4 col-8">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+{% endfor %} {% endif %}
+
+<!-- Table for all users -->
+<div class="row align-items-center justify-content-center">
+    <div class="col-6 py-4">
+        <table class="table table-bordered table-hover">
+            <thead class="bg-success">
+                <tr class="text-white">
+                    <th>Sr. No.</th>
+                    <th>Risk Name</th>
+                    <th class="text-center">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for risk in page_obj %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ risk.name }}</td>
+                    <td class="text-center">
+                        <button type="button" title="Delete" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteRisk-{{ risk.id }}">
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+                <!-- Modal -->
+                <div class="modal fade" id="deleteRisk-{{ risk.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <form action="{% url 'delete_risk' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <input type="hidden" name="risk_id" value="{{ risk.id }}">
+                                    <input type="text" value="{{ risk.name }}" class="form-control" disabled>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+{% endblock %}

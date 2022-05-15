@@ -24,6 +24,31 @@
 </head>
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <!-- Navbar content -->
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <h3 class="text-bold">Greenline</h3>
+            </a>
+            {% if request.user %}
+            <ul class="navbar-nav ml-auto" id="navbarNav">
+                {% if request.user.is_superuser %}
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'add_user' %}">
+                        <i class="fs-4 pr-1 bi-person-plus-fill"></i> <span class="ms-1 d-none d-md-inline">Users</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'add_risk' %}">
+                        <i class="fs-4 pr-1 bi-plus-circle-fill"></i> <span class="ms-1 d-none d-md-inline">Add Risk</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        </div>
+    </nav>
+
     <div class="container-fluid">
         <div class="row flex-nowrap">
             <div class="col-lg-2 col-3 px-sm-2 px-0 dashboard-gradient br-green min-vh-100">
@@ -59,7 +84,7 @@
                                 <i class="fs-4 pr-1 bi-alarm"></i> <span class="ms-1 d-none d-md-inline">Passengers</span></a>
                         </li>
                         <li>
-                            <a href="#" class="nav-link  align-middle">
+                            <a href="/logout" class="nav-link  align-middle">
                                 <i class="fs-4 pr-1 bi bi-box-arrow-left"></i> <span class="ms-1 d-none d-md-inline">Sign
                                     Out</span> </a>
                         </li>

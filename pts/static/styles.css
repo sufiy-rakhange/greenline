@@ -5,9 +5,13 @@
 }
 
 .dashboard-gradient {
-    background: -webkit-linear-gradient(top left, black, #152438, #4fe588);
+    background: -webkit-linear-gradient(90deg, black, #152438, #4fe588);
     background-repeat: no-repeat;
     background-size: 100% auto;
+}
+
+nav {
+    background: -webkit-linear-gradient(right, #152438, #4fe588);
 }
 
 @media (max-width:768px) {
@@ -39,7 +43,7 @@ body {
 
 /* Sidebar */
 
-.nav-link {
+.dashboard-gradient .nav-link {
     color: #fff !important;
     background-color: #152438 !important;
     border: 1px solid #4fe588 !important;
@@ -57,19 +61,19 @@ body {
     background-color: red;
 }
 
-.nav-item .active {
+.dashboard-gradient .nav-item .active {
     color: #fff !important;
     background-color: #4fe588 !important;
     border: 1px solid #152438 !important;
 }
 
-.nav-link:hover {
+.dashboard-gradient .nav-link:hover {
     color: #fff;
     background-color: #8bd0a5d4 !important;
     border: 1px solid #152438 !important;
 }
 
-li .active {
+.dashboard-gradient li .active {
     color: #fff !important;
     background-color: #4fe588 !important;
     border: 1px solid #152438 !important;
@@ -95,6 +99,6 @@ li .active {
 
 /* Table styling */
 
-tr:hover {
+tbody:hover {
     cursor: pointer;
 }

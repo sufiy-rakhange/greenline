@@ -3,6 +3,20 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name="index"),
+
+    path('login', views.login, name="login"),
+    path('logout', views.logout, name="logout"),
+
+    # User URLs
+    path('add-user', views.addUser, name="add_user"),
+    path('delete-user', views.deleteUser, name="delete_user"),
+
+    # Risk URLs
+    path('add-risk', views.addRisk, name="add_risk"),
+    path('delete-risk', views.deleteRisk, name="delete_risk"),
+
+
+    # To upload the files
     path('upload', views.upload, name="upload"),
 
     # Airlines
@@ -18,5 +32,5 @@ urlpatterns = [
     path('flight/<id>', views.flightRisk, name="flight_risk"),
 
     path('passengers', views.passengers, name="passengers"),
-    path('passenger/<id>', views.passengerRisk, name="passenger_risk"),
+    path('passenger/<id>/<p_id>', views.passengerRisk, name="passenger_risk"),
 ]
