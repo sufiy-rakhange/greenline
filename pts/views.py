@@ -1,12 +1,5 @@
-import email
-import enum
-import imp
-from math import floor
-import re
-from unicodedata import category, name
 from django.contrib.auth.hashers import make_password
-from django.http import Http404, HttpResponse, request, response
-from django.template import context
+from django.http import Http404
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponseRedirect
@@ -15,11 +8,9 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.contrib import messages
 from django.core.paginator import Paginator
-from numpy import array
 from .models import *
-import io, json
+import json
 import pandas
-import numpy
 from collections import defaultdict
 
 # Create your views here.
@@ -35,7 +26,7 @@ def login(request):
         if not password:
             messages.success(request, "Must Provide Password!!")
             return render(request, "login.html")
-        user = authenticate(request, username=username, password=password, is_staff=True)
+        user = authenticate(request, username=username, password=password   )
         if not user:
             messages.success(request, "Username and Password did not Match!!!")
             return render(request, "login.html")
@@ -104,8 +95,9 @@ def addUser(request):
 @require_http_methods(["POST"])
 @login_required(login_url="login")
 def deleteUser(request):
-    id = request.POST["user_id"]
-    if not id:
+    try:
+        id = request.POST["user_id"]
+    except:
         messages.success(request, "Invalid user selected")
         return render(request, "add_user.html")
     try:
@@ -165,83 +157,161 @@ def deleteRisk(request):
         messages.success(request, "Invalid risk selected!")
         return HttpResponseRedirect(reverse("add_risk"))
 
+@require_http_methods(["POST"])
+@login_required(login_url="login")
+def deleteData(request):
+    flights = Flights.objects.all()
+    passengers = Passengers.objects.all()
+    passengers_flights = PassengerFlight.objects.all()
+    passengers_risks = PassengerRisk.objects.all()
+    risks = Risks.objects.all()
+    # When no data is available to delete
+    if len(flights) == 0 or len(passengers) == 0:
+        messages.error(request, "No data found for deletion")
+        return HttpResponseRedirect(reverse("index"))
+
+    passengers_flights.delete()
+    passengers_risks.delete()
+    flights.delete()
+    passengers.delete()
+    risks.delete()
+    messages.success(request, "Passenger and Flight data deleted successfully")
+    return HttpResponseRedirect(reverse("index"))
 
 @require_http_methods(["POST"])
 @login_required(login_url="login")
 def upload(request):
+    try:
+        category = request.POST['category']
+    except:
+        messages.success(request, 'Must select a category')
+        return HttpResponseRedirect(reverse("index"))
     try:
         file = request.FILES['file']
     except:
         messages.success(request, 'Must select a file')
         return HttpResponseRedirect(reverse("index"))
 
-    category = request.POST['category']
-
     if category == 'airlines':
+        # Reading the file
         data = (pandas.read_excel(file)).to_numpy()
+        # Reading the columns
+        columns = list(pandas.read_excel(file))
+        # Validating with unique column name
+        if not '2 Letter Code' in columns:
+            messages.error(request, 'Invalid file selected')
+            return HttpResponseRedirect(reverse("index"))
+        # print(data[0][1])
         for d in data:
-            Airlines(
-                company_name=d[0],
-                two_letter_code=d[1],
-                country=d[2],
-            ).save()
+            try:
+                Airlines.objects.get(two_letter_code=d[1])
+                messages.success(request, 'Airlines already exist')
+                return HttpResponseRedirect(reverse("index"))
+            except:
+                Airlines(
+                    company_name=d[0],
+                    two_letter_code=d[1],
+                    country=d[2],
+                ).save()
         messages.success(
             request, 'Airlines details has been added successfully!')
         return HttpResponseRedirect(reverse("index"))
+
     elif category == 'airport':
+        # Reading the file
         data = (pandas.read_excel(file)).to_numpy()
+        # Reading the columns
+        columns = list(pandas.read_excel(file))
+        # Validating with unique column name
+        if not 'IATA Code' in columns:
+            messages.error(request, 'Invalid file selected')
+            return HttpResponseRedirect(reverse("index"))
         for d in data:
-            Airports(
-                iata_code=d[1],
-                iso_alpha_3_code=d[2],
-                long_name=d[3],
-                long_location=d[4],
-            ).save()
+            try:
+                Airports.objects.get(iata_code=d[0])
+                messages.success(request, 'Airport already exist')
+                return HttpResponseRedirect(reverse("index"))
+            except:
+                Airports(
+                    iata_code=d[0],
+                    iso_alpha_3_code=d[1],
+                    long_name=d[2],
+                    long_location=d[3],
+                ).save()
         messages.success(
             request, 'Airports details has been added successfully!')
         return HttpResponseRedirect(reverse("index"))
     elif category == 'flight':
+        # Reading the file
         data = (pandas.read_excel(file)).to_numpy()
+        # Reading the columns
+        columns = list(pandas.read_excel(file))
+        # Validating with unique column name
+        if not 'Flight' in columns:
+            messages.error(request, 'Invalid file selected')
+            return HttpResponseRedirect(reverse("index"))
         for d in data:
-            Flights(
-                flight=d[0],
-                departure=d[1],
-                arrival=d[2],
-                terminal=d[3],
-                aircraft=d[4],
-                capacity=d[5],
-                crew=d[6],
-            ).save()
+            try:
+                Flights.objects.get(flight=d[0])
+                messages.success(request, 'Flight already exist')
+                return HttpResponseRedirect(reverse("index"))
+            except:
+                Flights(
+                    flight=d[0],
+                    departure=d[1],
+                    arrival=d[2],
+                    terminal=d[3],
+                    aircraft=d[4],
+                    capacity=d[5],
+                    crew=d[6],
+                ).save()
         messages.success(
             request, 'Flights details has been added successfully!')
         return HttpResponseRedirect(reverse("index"))
     elif category == 'passenger':
+        # Reading the file
         data = (pandas.read_excel(file)).to_numpy()
+        # Reading the columns
+        columns = list(pandas.read_excel(file))
+        # Validating with unique column name
+        if not 'Seat Number' in columns:
+            messages.error(request, 'Invalid file selected')
+            return HttpResponseRedirect(reverse("index"))
         for d in data:
-            flight = Flights.objects.get(
-                flight=d[0]
-            )
-            f_id = Flights.objects.get(id=flight.id)
-            print("f =>", f_id.id)
-            p = Passengers(
-                forename=d[2],
-                family_name=d[3],
-                passport_number=d[4],
-                country_of_issue=d[5],
-            )
-            p.save()
-            p_id = Passengers.objects.get(id=p.id)
-            PassengerFlight(
-                p_id=p_id,
-                f_id=f_id,
-                seat_number=d[1]
-            ).save()
+            try:
+                Passengers.objects.get(passport_number=d[4])
+                messages.success(request, 'Passenger already exist')
+                return HttpResponseRedirect(reverse("index"))
+            except:
+                flight = Flights.objects.get(
+                    flight=d[0]
+                )
+                f_id = Flights.objects.get(id=flight.id)
+                p = Passengers(
+                    forename=d[2],
+                    family_name=d[3],
+                    passport_number=d[4],
+                    country_of_issue=d[5],
+                )
+                p.save()
+                p_id = Passengers.objects.get(id=p.id)
+                PassengerFlight(
+                    p_id=p_id,
+                    f_id=f_id,
+                    seat_number=d[1]
+                ).save()
         messages.success(
             request, 'Passengers details has been added successfully!')
         return HttpResponseRedirect(reverse("index"))
     elif category == 'risk':
-        columns = list(pandas.read_excel(file))
+        # Reading the file
         data = (pandas.read_excel(file)).to_numpy()
+        # Reading the columns
+        columns = list(pandas.read_excel(file))
+        # Validating with unique column name
+        if not 'Nationality' in columns:
+            messages.error(request, 'Invalid file selected')
+            return HttpResponseRedirect(reverse("index"))
         for row in data:
             count = 0
             passenger = Passengers.objects.filter(passport_number=row[5]).first()
@@ -249,12 +319,10 @@ def upload(request):
                 if (count >= 6):
                     try:
                         risk = Risks.objects.get(name=columns[count])
-
                     except:
                         risk = Risks.objects.create(
                             name=columns[count]
                         )
-
                     PassengerRisk.objects.create(
                         p_id=passenger,
                         r_id=risk,
@@ -290,8 +358,13 @@ def airlineRisk(request, id):
         raise Http404("No Such Airline Found")
     passenger_risk = PassengerRisk.objects.all()
     passenger_flight = PassengerFlight.objects.filter(
-        f_id__flight__contains=airline.two_letter_code
-    )
+            f_id__flight__contains=airline.two_letter_code
+        )
+    # When here is no risk for the airline
+    if len(passenger_flight) == 0:
+        messages.success(request, "No risk found for this flight")
+        return HttpResponseRedirect(reverse("airlines"))
+
     risks = Risks.objects.all()
     risk_list = defaultdict(dict)
     risk_list_overall = defaultdict(dict)
@@ -348,6 +421,10 @@ def airportRisk(request, id):
     passenger_flight = PassengerFlight.objects.filter(
         f_id__arrival=airport.iata_code
     )
+    # When here is no risk for the airport
+    if len(passenger_flight) == 0:
+        messages.success(request, "No risk found for this flight")
+        return HttpResponseRedirect(reverse("airports"))
     risks = Risks.objects.all()
     risk_list = defaultdict(dict)
     risk_list_overall = defaultdict(dict)
@@ -398,17 +475,20 @@ def flights(request):
 @require_http_methods(["GET"])
 @login_required(login_url="login")
 def flightRisk(request, id):
+    # Checking whether or not the flight is valid
     try:
         flight = Flights.objects.get(id=id)
         risks = Risks.objects.all()
     except:
         raise Http404("No Such Flight Found")
+    # Initializing empty array
     arr = {
         'r': []
     }
-
+    # Initializing empty dictionaries
     risk_list = defaultdict(dict)
     risk_list_overall = defaultdict(dict)
+
     passenger_flight = PassengerFlight.objects.filter(f_id=flight.id).values()
 
     for i in passenger_flight:
@@ -428,6 +508,7 @@ def flightRisk(request, id):
         return HttpResponseRedirect(reverse("flights"))
     for risk in risks.values():
         arr['r'].append(risk)
+    # Passing all the values in dictionary to html page
     context = {
         'flight': flight,
         'risks': risks,

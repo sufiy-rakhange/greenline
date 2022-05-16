@@ -32,6 +32,11 @@
             </a>
             {% if request.user %}
             <ul class="navbar-nav ml-auto" id="navbarNav">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" data-bs-toggle="modal" data-bs-target="#delete_data">
+                        <i class="fs-4 pr-1 bi-trash-fill"></i> <span class="ms-1 d-none d-md-inline">Delete Data</span>
+                    </a>
+                </li>
                 {% if request.user.is_superuser %}
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'add_user' %}">
@@ -54,9 +59,6 @@
             <div class="col-lg-2 col-3 px-sm-2 px-0 dashboard-gradient br-green min-vh-100">
                 <div class="d-flex flex-column align-items-center px-3 pt-2 text-white">
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center" id="menu">
-                        <a href="/" class="pb-3 mb-md-0 me-md-auto">
-                            <!-- <img src="../static/img/favicon.png" alt="Home"> -->
-                        </a>
                         {% url 'index' as url %}
                         <li class="nav-item">
                             <a href="{% url 'index' %}" class="nav-link align-middle {% if request.path == url %}active{% endif %}">
@@ -94,6 +96,27 @@
             <div class="col py-3 align-self-center">
                 {% block content %} {% endblock %}
             </div>
+        </div>
+    </div>
+
+    <!-- Modal for deleting Data -->
+    <div class="modal fade" id="delete_data" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form action="{% url 'delete_data' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h5 class="modal-title" id="exampleModalLabel">This will delete the data of passengers and flights</h5>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </body>

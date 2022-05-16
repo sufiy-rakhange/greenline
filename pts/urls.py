@@ -7,6 +7,8 @@ urlpatterns = [
     path('login', views.login, name="login"),
     path('logout', views.logout, name="logout"),
 
+    path('delete-data', views.deleteData, name="delete_data"),
+
     # User URLs
     path('add-user', views.addUser, name="add_user"),
     path('delete-user', views.deleteUser, name="delete_user"),
