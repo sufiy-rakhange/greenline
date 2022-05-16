@@ -10,20 +10,24 @@
                 Add a Risk
             </div>
             <div class="card-body">
+                <!-- Form to add a risk -->
                 <form action="{% url 'add_risk' %}" method="POST">
                     {% csrf_token %}
                     <div class="row my-4">
                         <div class="col">
+                            <!-- Risk Name Field -->
                             <input type="text" name="name" class="form-control" placeholder="Risk Name">
                         </div>
                     </div>
                     <div class="row my-4">
                         <div class="col text-end">
+                            <!-- Button to add a risk -->
                             <button type="submit" class="btn btn-success">
                                 Add Risk
                             </button>
                         </div>
                         <div class="col">
+                            <!-- Button to go back to index page -->
                             <button type="button" class="btn btn-secondary" onclick="window.location.href = '/'">
                                 Go back
                             </button>
@@ -46,7 +50,7 @@
 </div>
 {% endfor %} {% endif %}
 
-<!-- Table for all users -->
+<!-- Table for all risk -->
 <div class="row align-items-center justify-content-center">
     <div class="col-6 py-4">
         <table class="table table-bordered table-hover">
@@ -58,6 +62,7 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- Looping over to display all risk -->
                 {% for risk in page_obj %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
@@ -68,9 +73,10 @@
                         </button>
                     </td>
                 </tr>
-                <!-- Modal -->
+                <!-- Modal for delete confirmation -->
                 <div class="modal fade" id="deleteRisk-{{ risk.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
+                        <!-- Form to delete a risk -->
                         <form action="{% url 'delete_risk' %}" method="POST">
                             {% csrf_token %}
                             <div class="modal-content">
@@ -78,12 +84,15 @@
                                     <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
+                                <!-- Displaying risk values -->
                                 <div class="modal-body">
                                     <input type="hidden" name="risk_id" value="{{ risk.id }}">
                                     <input type="text" value="{{ risk.name }}" class="form-control" disabled>
                                 </div>
                                 <div class="modal-footer">
+                                    <!-- This button will close the modal -->
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <!-- This button will delete the selected user -->
                                     <button type="submit" class="btn btn-danger">Delete</button>
                                 </div>
                             </div>

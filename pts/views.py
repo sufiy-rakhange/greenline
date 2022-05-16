@@ -1,3 +1,4 @@
+# Including all the required libraries
 from django.contrib.auth.hashers import make_password
 from django.http import Http404
 from django.views.decorators.http import require_http_methods
@@ -13,7 +14,7 @@ import json
 import pandas
 from collections import defaultdict
 
-# Create your views here.
+# Login
 @require_http_methods(["GET", "POST"])
 def login(request):
     if request.method == 'POST':
@@ -26,18 +27,23 @@ def login(request):
         if not password:
             messages.success(request, "Must Provide Password!!")
             return render(request, "login.html")
-        user = authenticate(request, username=username, password=password   )
+        user = authenticate(request, username=username, password=password)
+        # Checking if the user exist
         if not user:
             messages.success(request, "Username and Password did not Match!!!")
             return render(request, "login.html")
+        # Signing in genuine user by using django in-built function
         auth_login(request, user)
         return HttpResponseRedirect(reverse("index"))
     else:
+        # Displaying login page
         return render(request, 'login.html')
 
+# Logout
 @require_http_methods(["GET"])
 @login_required(login_url="login")
 def logout(request):
+    # Signing out by using in-built django function
     auth_logout(request)
     messages.success(
         request, "You have been logged out from the system.")
@@ -46,6 +52,7 @@ def logout(request):
 @require_http_methods(["GET"])
 @login_required(login_url="login")
 def index(request):
+    # Displaying index page
     return render(request, 'index.html')
 
 
@@ -73,6 +80,7 @@ def addUser(request):
             messages.success(request, "Username already exist")
             return HttpResponseRedirect(reverse("add_user"))
         except:
+            # Creating a user if it is a new username
             User.objects.create(
                 username=username,
                 password=make_password(password),
@@ -86,7 +94,7 @@ def addUser(request):
         # Getting all the users
         users = User.objects.filter(is_superuser=False)
 
-         # Using Django pagination
+        # Using Django pagination
         paginator = Paginator(users, 15)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -95,17 +103,22 @@ def addUser(request):
 @require_http_methods(["POST"])
 @login_required(login_url="login")
 def deleteUser(request):
+    # Checking if user exist
     try:
         id = request.POST["user_id"]
     except:
-        messages.success(request, "Invalid user selected")
+        # Displaying error message for invalid users
+        messages.error(request, "Invalid user selected")
         return render(request, "add_user.html")
     try:
+        # Getting the desired user
         user = User.objects.get(id=id)
+        # Deleting a user from model
         user.delete()
         messages.success(request, "User deleted successfully")
         return HttpResponseRedirect(reverse("add_user"))
     except:
+        # If the desired user does not exist in the model
         messages.success(request, "Invalid user selected!")
         return HttpResponseRedirect(reverse("add_user"))
 
@@ -120,12 +133,13 @@ def addRisk(request):
         if not name:
             messages.success(request, "Must provide a name for Risk!")
             return render(request, "add_risk.html")
-        # Checking if the username is already taken
         try:
+        # Checking if the risk name is already taken
             risk = Risks.objects.get(name=name)
             messages.success(request, "Risk already exist")
             return HttpResponseRedirect(reverse("add_risk"))
         except:
+            # Creating a new risk
             Risks.objects.create(
                 name=name
             )
@@ -145,21 +159,26 @@ def addRisk(request):
 @login_required(login_url="login")
 def deleteRisk(request):
     id = request.POST["risk_id"]
+    # If the desired id has been passed from web page
     if not id:
         messages.success(request, "Invalid risk selected")
         return render(request, "add_risk.html")
     try:
+        # checking if the risk exist
         risk = Risks.objects.get(id=id)
+        # Deleting the risk if exist
         risk.delete()
         messages.success(request, "Risk deleted successfully")
         return HttpResponseRedirect(reverse("add_risk"))
     except:
-        messages.success(request, "Invalid risk selected!")
+        # Displaying the error message
+        messages.error(request, "Invalid risk selected!")
         return HttpResponseRedirect(reverse("add_risk"))
 
 @require_http_methods(["POST"])
 @login_required(login_url="login")
 def deleteData(request):
+    # Getting all the required models
     flights = Flights.objects.all()
     passengers = Passengers.objects.all()
     passengers_flights = PassengerFlight.objects.all()
@@ -169,7 +188,7 @@ def deleteData(request):
     if len(flights) == 0 or len(passengers) == 0:
         messages.error(request, "No data found for deletion")
         return HttpResponseRedirect(reverse("index"))
-
+    # Deleting all the desired models
     passengers_flights.delete()
     passengers_risks.delete()
     flights.delete()
@@ -201,7 +220,6 @@ def upload(request):
         if not '2 Letter Code' in columns:
             messages.error(request, 'Invalid file selected')
             return HttpResponseRedirect(reverse("index"))
-        # print(data[0][1])
         for d in data:
             try:
                 Airlines.objects.get(two_letter_code=d[1])
@@ -242,6 +260,9 @@ def upload(request):
             request, 'Airports details has been added successfully!')
         return HttpResponseRedirect(reverse("index"))
     elif category == 'flight':
+        if len(Airlines.objects.all()) == 0 or len(Airports.objects.all()) == 0:
+            messages.error(request, 'Cannot add flights before airlines and airports')
+            return HttpResponseRedirect(reverse("index"))
         # Reading the file
         data = (pandas.read_excel(file)).to_numpy()
         # Reading the columns
@@ -269,6 +290,9 @@ def upload(request):
             request, 'Flights details has been added successfully!')
         return HttpResponseRedirect(reverse("index"))
     elif category == 'passenger':
+        if len(Flights.objects.all()) == 0:
+            messages.error(request, 'Cannot add risk before adding flights')
+            return HttpResponseRedirect(reverse("index"))
         # Reading the file
         data = (pandas.read_excel(file)).to_numpy()
         # Reading the columns
@@ -304,6 +328,9 @@ def upload(request):
             request, 'Passengers details has been added successfully!')
         return HttpResponseRedirect(reverse("index"))
     elif category == 'risk':
+        if len(Passengers.objects.all()) == 0:
+            messages.error(request, 'Cannot add risk before Passenger and Flights')
+            return HttpResponseRedirect(reverse("index"))
         # Reading the file
         data = (pandas.read_excel(file)).to_numpy()
         # Reading the columns
@@ -352,11 +379,14 @@ def airlines(request):
 @login_required(login_url="login")
 def airlineRisk(request, id):
     try:
+        # checking for desired airline
         airline = Airlines.objects.get(id=id)
         risks = Risks.objects.all()
     except:
+        # when the airline does not exist
         raise Http404("No Such Airline Found")
     passenger_risk = PassengerRisk.objects.all()
+    # Filtering fligts with Two Letter Code
     passenger_flight = PassengerFlight.objects.filter(
             f_id__flight__contains=airline.two_letter_code
         )
@@ -365,9 +395,12 @@ def airlineRisk(request, id):
         messages.success(request, "No risk found for this flight")
         return HttpResponseRedirect(reverse("airlines"))
 
+    # Getting all risk object
     risks = Risks.objects.all()
+    # Initialising 2D dictionaries
     risk_list = defaultdict(dict)
     risk_list_overall = defaultdict(dict)
+    # Looping over to get overall as well as individual risk of Airlines
     for i in passenger_flight:
         passengers = PassengerRisk.objects.filter(p_id=i.p_id)
         for p in passengers.values():
@@ -387,7 +420,7 @@ def airlineRisk(request, id):
     }
     for risk in risks.values():
         arr['r'].append(risk)
-    print(risk_list)
+
     context = {
         'airline': airline,
         'passenger_risk': passenger_risk,
@@ -428,6 +461,7 @@ def airportRisk(request, id):
     risks = Risks.objects.all()
     risk_list = defaultdict(dict)
     risk_list_overall = defaultdict(dict)
+    # Looping over to get overall as well as individual risk of Airports
     for i in passenger_flight:
         passengers = PassengerRisk.objects.filter(p_id=i.p_id)
         for p in passengers.values():
@@ -490,7 +524,7 @@ def flightRisk(request, id):
     risk_list_overall = defaultdict(dict)
 
     passenger_flight = PassengerFlight.objects.filter(f_id=flight.id).values()
-
+    # Looping over to get overall as well as individual risk of Flights
     for i in passenger_flight:
         passengers = PassengerRisk.objects.filter(p_id=i['p_id_id'])
         for p in passengers.values():
@@ -552,6 +586,7 @@ def passengerRisk(request, id, p_id):
         'a' : [],
         'r': []
     }
+    # Looping over to get overall as well as individual risk of Passengers
     for p in p_risk.values():
         arr['a'].append(p)
     for risk in risks.values():

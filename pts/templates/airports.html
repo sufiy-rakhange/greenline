@@ -14,6 +14,7 @@
     </div>
 </div>
 {% endfor %} {% endif %}
+<!-- Displaying table for list of airports -->
 <div class="row justify-content-center">
     <div class="col">
         <table class="table table-bordered table-hover">
@@ -26,6 +27,7 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- Looping over for multiple airports -->
                 {% for airport in page_obj %}
                 <tr onclick="window.location.href = 'airport/{{ airport.id }}'">
                     <td>{{ airport.iata_code }}</td>
@@ -36,6 +38,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        <!-- Pagination display -->
         <div class="alert alert-light page">
             <span class="step-links">
                 {% if page_obj.has_previous %}

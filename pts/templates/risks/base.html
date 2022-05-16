@@ -32,13 +32,16 @@
         <div class="row py-3 ">
             <div class="col-lg-12 px-sm-2 px-0">
                 <div class="d-flex flex-column align-items-center px-3 pt-2">
+                    <!-- block to display heading -->
                     {% block heading %}{% endblock %}
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <!-- Overview tab -->
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">
                                 Overview
                             </button>
                         </li>
+                        <!-- Looping over to display different tabs according to risk -->
                         {% for risk in risks %}
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="{{ risk.name|cut:' ' }}-tab" data-bs-toggle="tab" data-bs-target="#{{ risk.name|cut:' ' }}" type="button" role="tab" aria-controls="{{ risk.name }}    " aria-selected="false">
@@ -50,7 +53,6 @@
                     <div class="tab-content" id="myTabContent">
                         {% block body %}{% endblock %}
                     </div>
-                    {% block passenger %} {% endblock %}
                 </div>
             </div>
         </div>

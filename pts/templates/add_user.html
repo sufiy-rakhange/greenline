@@ -10,37 +10,45 @@
                 Add a User
             </div>
             <div class="card-body">
+                <!-- Form to add a user -->
                 <form action="{% url 'add_user' %}" method="POST">
                     {% csrf_token %}
                     <div class="row my-4">
                         <div class="col">
+                            <!-- Username Field -->
                             <input type="text" name="username" class="form-control" placeholder="Username">
                         </div>
                         <div class="col">
+                            <!-- Password Field -->
                             <input type="password" name="password" class="form-control" placeholder="Password">
                         </div>
                     </div>
                     <div class="row">
                         <div class="col">
+                            <!-- First Name Field -->
                             <input type="text" name="firstname" class="form-control" placeholder="First Name (optional)">
                         </div>
                         <div class="col">
+                            <!-- Last Name Field -->
                             <input type="text" name="lastname" class="form-control" placeholder="Last Name (optional)">
                         </div>
                     </div>
 
                     <div class="row my-4">
                         <div class="col">
+                            <!-- Email Field -->
                             <input type="email" name="email" class="form-control" placeholder="Email (optional)">
                         </div>
                     </div>
                     <div class="row my-4">
                         <div class="col text-end">
+                            <!-- Button to add a user -->
                             <button type="submit" class="btn btn-success">
                                 Add User
                             </button>
                         </div>
                         <div class="col">
+                            <!-- Button to go back to index page -->
                             <button type="button" class="btn btn-secondary" onclick="window.location.href = '/'">
                                 Go back
                             </button>
@@ -78,6 +86,7 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- Looping over to display all users -->
                 {% for user in page_obj %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
@@ -91,9 +100,10 @@
                         </button>
                     </td>
                 </tr>
-                <!-- Modal -->
+                <!-- Modal for delete confirmation -->
                 <div class="modal fade" id="deleteUser-{{ user.id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                     <div class="modal-dialog">
+                        <!-- Form to delete a user -->
                         <form action="{% url 'delete_user' %}" method="POST">
                             {% csrf_token %}
                             <div class="modal-content">
@@ -101,6 +111,7 @@
                                     <h5 class="modal-title" id="exampleModalLabel">Are you sure?</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
+                                <!-- Displaying user values -->
                                 <div class="modal-body">
                                     <input type="hidden" name="user_id" value="{{ user.id }}">
                                     <input type="text" value="{{ user.first_name }}" class="form-control" disabled>
@@ -109,7 +120,9 @@
                                     <input type="text" value="{{ user.email }}" class="form-control" disabled>
                                 </div>
                                 <div class="modal-footer">
+                                    <!-- This button will close the modal -->
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <!-- This button will delete the selected user -->
                                     <button type="submit" class="btn btn-danger">Delete</button>
                                 </div>
                             </div>

@@ -2,7 +2,9 @@
 <!-- Title -->
 {% block title %}Document{% endblock %}
 <!-- Body -->
-{% block content %} {% if messages %} {% for message in messages %}
+{% block content %}
+<!-- Error or Success messages -->
+{% if messages %} {% for message in messages %}
 <div class="row justify-content-center mt-5">
     <div class="col-md-6 col-8">
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -12,10 +14,12 @@
     </div>
 </div>
 {% endfor %} {% endif %}
+<!-- Display of index page -->
 <div class="row justify-content-center">
     <div class="col-8">
         <div class="card dashboard-card m-5 p-5">
             <div class="card-header">
+                <!-- Welcoming user with some text message -->
                 <h3 class="text-capitalize">hello {{ request.user.username }}</h3>
             </div>
             <div class="card-body">
@@ -23,11 +27,12 @@
 
                 <hr class="my-4">
                 <label>You can upload a file from below for selected category</label>
-                <!-- <input type="text" name="" id="" class="form-control"> -->
+                <!-- Form to store imported file data -->
                 <form action="{% url 'upload' %}" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-12">
+                            <!-- Dropdown for selecting the category of file -->
                             <select name="category" class="form-select">
                                 <option value="" selected disabled>-- Select Category --</option>
                                 <option value="airlines">Airlines Data</option>
@@ -37,9 +42,11 @@
                                 <option value="risk">Risk Profile</option>
                             </select>
                         </div>
+                        <!-- Filefield for selecting a file -->
                         <div class="col-12 p-2">
                             <input type="file" name="file" class="form-control">
                         </div>
+                        <!-- Submit button -->
                         <div class="col-12 text-center">
                             <button type="submit" class="btn btn-success">Submit</button>
                         </div>

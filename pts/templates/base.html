@@ -30,6 +30,7 @@
             <a class="navbar-brand" href="/">
                 <h3 class="text-bold">Greenline</h3>
             </a>
+            <!-- Displaying only for logged in users -->
             {% if request.user %}
             <ul class="navbar-nav ml-auto" id="navbarNav">
                 <li class="nav-item">
@@ -37,6 +38,7 @@
                         <i class="fs-4 pr-1 bi-trash-fill"></i> <span class="ms-1 d-none d-md-inline">Delete Data</span>
                     </a>
                 </li>
+                <!-- Displaying only for superuser -->
                 {% if request.user.is_superuser %}
                 <li class="nav-item">
                     <a class="nav-link active" href="{% url 'add_user' %}">
@@ -53,9 +55,9 @@
             {% endif %}
         </div>
     </nav>
-
     <div class="container-fluid">
         <div class="row flex-nowrap">
+            <!-- Sidebar of the dashboard -->
             <div class="col-lg-2 col-3 px-sm-2 px-0 dashboard-gradient br-green min-vh-100">
                 <div class="d-flex flex-column align-items-center px-3 pt-2 text-white">
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center" id="menu">
@@ -93,6 +95,7 @@
                     </ul>
                 </div>
             </div>
+            <!-- Main content of the dashboard -->
             <div class="col py-3 align-self-center">
                 {% block content %} {% endblock %}
             </div>

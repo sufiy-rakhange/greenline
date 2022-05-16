@@ -13,7 +13,8 @@
         </div>
     </div>
 </div>
-{% endfor %} {% endif %}{{page_obj | length}}
+{% endfor %} {% endif %}
+<!-- Displaying table for list of passengers -->
 <div class="row justify-content-center">
     <div class="col">
         <table class="table table-bordered table-hover">
@@ -28,6 +29,7 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- Looping over multiple passengers -->
                 {% for passenger in page_obj %}
                 <tr onclick="window.location.href = 'passenger/{{ passenger.id }}/{{ passenger.p_id.id }}'">
                     <td>{{ passenger.f_id.flight }}</td>
@@ -40,6 +42,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        <!-- Pagination Display -->
         <div class="alert alert-light page">
             <span class="step-links">
                 {% if page_obj.has_previous %}

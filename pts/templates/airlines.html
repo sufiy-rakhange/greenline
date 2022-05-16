@@ -15,7 +15,7 @@
     </div>
 </div>
 {% endfor %} {% endif %}
-
+<!-- Displaying table for list of airlines -->
 <div class="row justify-content-center">
     <div class="col">
         <table class="table table-bordered table-hover">
@@ -27,6 +27,7 @@
                 </tr>
             </thead>
             <tbody>
+                <!-- Looping over for multiple airlines -->
                 {% for airline in page_obj %}
                 <tr onclick="window.location.href = 'airline/{{ airline.id }}'">
                     <td>{{ airline.company_name }}</td>
@@ -36,6 +37,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        <!-- Pagination display -->
         <div class="alert alert-light page">
             <span class="step-links">
                 {% if page_obj.has_previous %}
@@ -51,6 +53,5 @@
             </span>
         </div>
     </div>
-
 </div>
 {% endblock %}
